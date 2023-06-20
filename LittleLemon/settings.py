@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'LittleLemonAPI.apps.LittlelemonapiConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'debug_toolbar',
     'djoser',
 ]
@@ -148,5 +149,5 @@ REST_FRAMEWORK = {
 #Djoser config
 DJOSER = {
     'USER_ID_FIELD':'Username',
-    'LOGIN_FIELD':'email'
+   
 }
