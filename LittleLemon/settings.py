@@ -128,7 +128,25 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #custom setting 
-
+#IPS for django debugtoolbar
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
+#rest framework config
+REST_FRAMEWORK = {
+    # 'DEFAULT_RENDERER_CLASSES':[
+    #     'rest_framework.renderers.JSONRenderer',
+    #     'rest_framework.renderers.BrowsableAPIRenderer',
+    #     'rest_framework_xml.renderers.XMLRenderer',
+    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework.authentication.SessionAuthentication',
+    )
+    
+}
+
+#Djoser config
+DJOSER = {
+    'USER_ID_FIELD':'Username',
+    'LOGIN_FIELD':'email'
+}
