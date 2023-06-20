@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'LittleLemonAPI.apps.LittlelemonapiConfig',
     'rest_framework',
+    'debug_toolbar',
     'djoser',
 ]
 
