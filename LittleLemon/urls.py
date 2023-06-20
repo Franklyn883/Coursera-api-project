@@ -18,6 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),
+    path('_debug_/', include('debug_toolbar.urls')),
     path('api/', include('LittleLemonAPI.urls')),
 ]
