@@ -1,6 +1,7 @@
 from rest_framework import serializers 
 from .models import Category,MenuItem,Cart,Order,OrderItem
 from rest_framework.validators import UniqueTogetherValidator
+import bleach
 
 class CategorySerializer(serializers.ModelSerializer):
   class Meta:
@@ -8,15 +9,25 @@ class CategorySerializer(serializers.ModelSerializer):
     fields = ['id','slug','title']
     
 class MenuItemSerializer(serializers.ModelSerializer):
-  Category = CategorySerializer()
+
+  category = CategorySerializer(read_only=True)
+  # To bring even more detailed result from the Category model
+ # category = CategorySerializer()
+  category_id = serializers.IntegerField(write_only=True)
   
   class Meta:
     model = MenuItem
-    fields = ['id','title','price', 'featured','category']
+    fields = ['id','title','price', 'featured','category','category_id']
     
     def validate_price(self,value):
       if(value < 0):
         raise serializers.ValidationError('price should be more that zero')
+      
+    #to clean the data
+    def validate(self,attrs):
+      attrs['title'] = bleach.clean(attrs['title'])
+      
+      return super().validate(attrs)
     
     
 class CartSerializer(serializers.ModelSerializer):
