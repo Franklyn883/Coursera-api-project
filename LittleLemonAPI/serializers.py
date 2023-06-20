@@ -1,5 +1,6 @@
 from rest_framework import serializers 
 from .models import Category,MenuItem,Cart,Order,OrderItem
+from rest_framework.validators import UniqueTogetherValidator
 
 class CategorySerializer(serializers.ModelSerializer):
   class Meta:
@@ -30,7 +31,12 @@ class CartSerializer(serializers.ModelSerializer):
       if(attrs['unit_price']<0):
         raise serializers.ValidationError("price should be more than zero")
       return super().validate(attrs)
-    
+    validators = [
+       UniqueTogetherValidator(
+       queryset=Cart.objects.all(),
+       fields=['user','menuitem']
+    ),
+  ]
 class OrderSerializer(serializers.ModelSerializer):
   
   model = Order
@@ -43,5 +49,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
   model = OrderItem
   fields = ['id', 'quantity', 'unit_price','price']
   depth = 1
-  
+  validators = [
+       UniqueTogetherValidator(
+       queryset=OrderItem.objects.all(),
+       fields=['menuitem','order']
+    ),
+  ]
   
