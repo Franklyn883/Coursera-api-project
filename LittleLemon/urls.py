@@ -24,9 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('_debug_/', include('debug_toolbar.urls')),
     path('api/', include('LittleLemonAPI.urls')),
-    path('auth/',include('djoser.urls')),
-    path('auth/token/', include('LittleLemonAPI.urls')),
+    #create user token
     path('token/login/', obtain_auth_token),
-   
+    path('api/users/', include('djoser.urls'))
     
 ]

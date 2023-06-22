@@ -6,11 +6,7 @@ from . import views
 urlpatterns = [
   path('menu-items',views.menu_items),
   path('menu-items/<int:pk>',views.menu_item),
-  path('login/', include('djoser.urls')), 
-   path('auth/users/',views.CustomRegistrationView.as_view({'post':'create'}))
- 
-  
- 
- 
+  path('auth/users/',views.CustomRegistrationView.as_view({'post':'create'})),
+
  
 ]
