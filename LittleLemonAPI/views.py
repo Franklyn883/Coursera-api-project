@@ -5,7 +5,16 @@ from .serializers import CartSerializer,MenuItemSerializer,OrderItemSerializer,O
 from .models import Cart,MenuItem,Order,OrderItem,Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
+
 # Create your views here.
+
+#userscreation
+
+class CustomRegistrationView(UserViewSet):
+    # Customize registration behavior if needed
+    pass
+
 @api_view(['POST','GET'])
 def menu_items(request):
   if request.method == 'GET':
@@ -24,6 +33,7 @@ def menu_items(request):
 def menu_item(request, pk):
  
   item = get_object_or_404(MenuItem, pk=pk)
-  #here notice we didn't ass the many=True argument because it's not a list.
+ 
   serialized_item = MenuItemSerializer(item)
   return Response(serialized_item.data)
+

@@ -140,14 +140,17 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.BrowsableAPIRenderer',
     #     'rest_framework_xml.renderers.XMLRenderer',
     # ],
-    'DEFAULT_AUTHENTICATION_CLASSES':(
+    'DEFAULT_AUTHENTICATION_CLASSES':[
         'rest_framework.authentication.SessionAuthentication',
-    )
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+         'rest_framework.authentication.TokenAuthentication'
+    ]
     
 }
 
 #Djoser config
 DJOSER = {
-    'USER_ID_FIELD':'Username',
+    'USER_ID_FIELD':'username',
+ 
    
 }
