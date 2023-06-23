@@ -10,5 +10,6 @@ urlpatterns = [
   #to create new user
   path('auth/users/',views.CustomRegistrationView.as_view({'post':'create'})),
 
+
  
 ]

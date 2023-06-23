@@ -49,6 +49,6 @@ def menu_item(request, pk):
   elif request.method in ['POST', 'PUT', 'DELETE', 'PATCH']:
     if request.user.groups.filter(name="Manager").exists():
       return Response(serialized_item.data, status.HTTP_200_OK)
-  else:
-    return Response({"Message":"Access denied"} ,status.HTTP_403_FORBIDDEN)
+    else:
+      return Response({"Message":"Unauthorized"} ,status.HTTP_403_FORBIDDEN)
 
