@@ -5,18 +5,15 @@ from .serializers import CartSerializer,MenuItemSerializer,OrderItemSerializer,O
 from .models import Cart,MenuItem,Order,OrderItem,Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
+
 #users authentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
+from django.contrib.auth.models import User,Group
 
 # Create your views here.
 
-#userscreation
 
-class CustomRegistrationView(UserViewSet):
-    # Customize registration behavior if needed
-    pass
-  
   
 
 @api_view(['POST','GET',"PUT","DELETE"])
@@ -51,4 +48,25 @@ def menu_item(request, pk):
       return Response(serialized_item.data, status.HTTP_200_OK)
     else:
       return Response({"Message":"Unauthorized"} ,status.HTTP_403_FORBIDDEN)
+    
+#manager views for assign users to groups
 
+@permission_classes([IsAdminUser])
+@api_view(['GET','POST','DELETE'])
+def managers(request):
+  username = request.data.get('username')
+  
+  if username:
+    user = get_object_or_404(User,username=username)
+    managers=Group.objects.get(name="Manager")
+    if request.method == 'GET':
+      serialized_managers = list(managers.user_set.values())  # Serialize the queryset
+      return Response(serialized_managers, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+      managers.user_set.add(user)
+      return Response({'message':'User added successfully'}, status.HTTP_200_OK)
+    elif request.method == 'DELETE':
+      managers.user_set.remove(user)
+      return Response({'Message':'user removed'},status.HTTP_200_OK)
+  return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
+  
