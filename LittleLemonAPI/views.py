@@ -42,11 +42,21 @@ def menu_item(request, pk):
   
   if request.method == 'GET':
     return Response(serialized_item.data)
-  
-  elif request.method in ['POST', 'PUT', 'DELETE', 'PATCH']:
-    if request.user.groups.filter(name="Manager").exists():
-      return Response(serialized_item.data, status.HTTP_200_OK)
-    else:
+
+  if request.user.groups.filter(name="Manager").exists():
+    if request.method == 'DELETE':
+      item.delete()
+      return Response({'Message':"Item removed successfully"},status.HTTP_200_OK)
+    elif request.method == "PUT" or request.method == "PATCH":
+      data = request.data  # Use request.data to access the deserialized data
+
+      # Update the item fields with the new data
+      serializer = MenuItemSerializer(item, data=data, partial=True)
+      if serializer.is_valid():
+        serializer.save()
+        
+      return Response({'Message':'Item updated successfully'},status.HTTP_200_OK)
+  else:
       return Response({"Message":"Unauthorized"} ,status.HTTP_403_FORBIDDEN)
     
 #manager views for assign users to groups
@@ -55,14 +65,14 @@ def menu_item(request, pk):
 @api_view(['GET','POST','DELETE'])
 def managers(request):
   username = request.data.get('username')
-  
-  if username:
+  managers=Group.objects.get(name="Manager")
+  if request.method == 'GET':
+    managers = managers.user_set.values()  # Serialize the queryset
+    return Response(managers, status=status.HTTP_200_OK)
+
+  elif username:
     user = get_object_or_404(User,username=username)
-    managers=Group.objects.get(name="Manager")
-    if request.method == 'GET':
-      serialized_managers = list(managers.user_set.values())  # Serialize the queryset
-      return Response(serialized_managers, status=status.HTTP_200_OK)
-    elif request.method == 'POST':
+    if request.method == 'POST':
       managers.user_set.add(user)
       return Response({'message':'User added successfully'}, status.HTTP_200_OK)
     elif request.method == 'DELETE':
