@@ -6,7 +6,8 @@ from . import views
 urlpatterns = [
   path('menu-items',views.menu_items),
   path('menu-items/<int:pk>',views.menu_item),
-  path('groups/manager/users', views.managers)
+  path('groups/manager/users', views.managers),
+  path('groups/manager/users/<int:user_id>',views.remove_user_from_manager),
 
 
  

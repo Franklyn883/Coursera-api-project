@@ -79,4 +79,15 @@ def managers(request):
       managers.user_set.remove(user)
       return Response({'Message':'user removed'},status.HTTP_200_OK)
   return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
+
+@permission_classes([IsAdminUser])
+@api_view(['DELETE'])
+def remove_user_from_manager(request,user_id):
+  user = get_object_or_404(User, id=user_id)
+  managers = Group.objects.get(name="Manager")
+  if request.method == 'DELETE':
+     managers.user_set.remove(user)
+     return Response({'message': 'User removed'}, status=status.HTTP_200_OK)
+  else:
+    return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
   
