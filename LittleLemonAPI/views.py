@@ -61,8 +61,9 @@ def menu_item(request, pk):
     
 #manager views for assign users to groups
 
+
+@api_view(['GET','POST'])
 @permission_classes([IsAdminUser])
-@api_view(['GET','POST','DELETE'])
 def managers(request):
   username = request.data.get('username')
   managers=Group.objects.get(name="Manager")
@@ -75,19 +76,49 @@ def managers(request):
     if request.method == 'POST':
       managers.user_set.add(user)
       return Response({'message':'User added successfully'}, status.HTTP_200_OK)
-    elif request.method == 'DELETE':
-      managers.user_set.remove(user)
-      return Response({'Message':'user removed'},status.HTTP_200_OK)
-  return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
+  else:
+    return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
 
-@permission_classes([IsAdminUser])
+
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def remove_user_from_manager(request,user_id):
   user = get_object_or_404(User, id=user_id)
   managers = Group.objects.get(name="Manager")
   if request.method == 'DELETE':
      managers.user_set.remove(user)
      return Response({'message': 'User removed'}, status=status.HTTP_200_OK)
-  else:
-    return Response({'message':'error'},status.HTTP_400_BAD_REQUEST)
   
+  return Response({'message':'Unauthorized'},status.HTTP_403_FORBIDDEN)
+  
+#Views from getting and adding delivery crew members
+
+
+@api_view(['GET','POST'])
+@permission_classes([IsAdminUser])
+def delivery_crew(request):
+  username = request.data.get('username')
+  delivery_crew =Group.objects.get(name="Delivery crew")
+  if request.method == 'GET':
+    delivery_crew = delivery_crew.user_set.values()  # Serialize the queryset
+    return Response(delivery_crew, status=status.HTTP_200_OK)
+  elif username:
+    user = get_object_or_404(User,username=username)
+    if request.method =='POST':
+      delivery_crew.user_set.add(user)
+      return Response({'Message':'User added successfully'}, status.HTTP_200_OK)
+
+  return Response({'Message':'Unauthorized'}, status.HTTP_403_FORBIDDEN)
+  
+  
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def remove_user_from_delivery_crew(request,user_id):
+  user = get_object_or_404(User, id=user_id)
+  delivery_crew = Group.objects.get(name="Delivery crew")
+  if request.method == 'DELETE':
+     delivery_crew.user_set.remove(user)
+     return Response({'message': 'User removed'}, status=status.HTTP_200_OK)
+
+  return Response({'message':'Unauthorized'},status.HTTP_403_FORBIDDEN)
