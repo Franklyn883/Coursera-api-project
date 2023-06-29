@@ -122,3 +122,27 @@ def remove_user_from_delivery_crew(request,user_id):
      return Response({'message': 'User removed'}, status=status.HTTP_200_OK)
 
   return Response({'message':'Unauthorized'},status.HTTP_403_FORBIDDEN)
+
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def cart(request):
+  if request.method == 'GET':
+    items = Cart.objects.filter(user=request.user)
+    serialized_items = CartSerializer(items, many=True)
+    return Response(serialized_items.data, status=status.HTTP_200_OK)
+  
+  elif request.method == 'POST':
+
+    serialized_items = CartSerializer(data=request.data, context={'request':request})
+    print(request.data)
+    if serialized_items.is_valid(raise_exception=True):
+      serialized_items.save()
+      return Response(serialized_items.data,status.HTTP_201_CREATED)
+    
+  elif request.method=='DELETE':
+    items = Cart.objects.all()
+    items.delete()
+    return Response({'Message':'Cart deleted'},status.HTTP_200_OK)
+  else:
+    return Response({'Message:unauthorized'}, status.HTTP_401_UNAUTHORIZED)
+   

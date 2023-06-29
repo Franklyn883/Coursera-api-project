@@ -31,23 +31,29 @@ class MenuItemSerializer(serializers.ModelSerializer):
     
     
 class CartSerializer(serializers.ModelSerializer):
+
+  user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
   class Meta:
     model = Cart
-    fields = ['id','quantity','unit_price', 'price']
-    depth = 1
-    
-    def validate(self,attrs):
-      if(attrs['quantity']<0):
-        raise serializers.ValidationError("Quantity should be more than 0")
-      if(attrs['unit_price']<0):
-        raise serializers.ValidationError("price should be more than zero")
-      return super().validate(attrs)
+    fields = ['id','user','menuitem','quantity','unit_price', 'price','menuitem']
     validators = [
        UniqueTogetherValidator(
        queryset=Cart.objects.all(),
        fields=['user','menuitem']
     ),
   ]
+  def create(self, validated_data):
+    cart = Cart.objects.create(
+    user=self.context['request'].user,
+    **validated_data
+        )
+    return cart
+  def validate(self,attrs):
+      if attrs['quantity']<0:
+        raise serializers.ValidationError("Quantity should be more than 0")
+      if attrs['unit_price']<0:
+        raise serializers.ValidationError("price should be more than zero")
+      return attrs
 class OrderSerializer(serializers.ModelSerializer):
   
   model = Order
