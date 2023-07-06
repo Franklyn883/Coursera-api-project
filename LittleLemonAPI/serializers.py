@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Category,MenuItem,Cart,Order,OrderItem
 from rest_framework.validators import UniqueTogetherValidator
 import bleach
+from django.contrib.auth.models import User
+import datetime
 
 class CategorySerializer(serializers.ModelSerializer):
   class Meta:
@@ -54,11 +56,21 @@ class CartSerializer(serializers.ModelSerializer):
       if attrs['unit_price']<0:
         raise serializers.ValidationError("price should be more than zero")
       return attrs
+    
+    
 class OrderSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    delivery_crew = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), allow_null=True)
+    order_items = CartSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date', 'order_items']
+        read_only_fields = ['id', 'status', 'date', 'order_items']
   
-  model = Order
-  fields = ['id', 'status','total','date']
-  depth = 1
+  
+
+  
   
 class OrderItemSerializer(serializers.ModelSerializer):
   unit_price = serializers.DecimalField(max_digits=6, decimal_places=2)
@@ -72,4 +84,3 @@ class OrderItemSerializer(serializers.ModelSerializer):
        fields=['menuitem','order']
     ),
   ]
-  

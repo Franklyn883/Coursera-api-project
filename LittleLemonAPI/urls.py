@@ -11,7 +11,5 @@ urlpatterns = [
   path('groups/delivery-crew/users', views.delivery_crew),
   path('groups/delivery-crew/users/<int:user_id>',views.remove_user_from_delivery_crew),
   path('cart/menu-items',views.cart),
-
-
- 
+  path('order',views.order),
 ]
