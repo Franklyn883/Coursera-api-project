@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes,throttle_classes
 from .serializers import CartSerializer, MenuItemSerializer, OrderItemSerializer, OrderSerializer, CategorySerializer
 from .models import Cart, MenuItem, Order, OrderItem, Category
 from rest_framework import status
@@ -9,17 +9,19 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 # users authentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
 from django.contrib.auth.models import User, Group
 
 #adding pagination
 from django.core.paginator import Paginator,EmptyPage
 
+#for throttling
+from rest_framework.throttling import AnonRateThrottle,UserRateThrottle
 # Create your views here.
 
 
 @api_view(['POST', 'GET', "PUT", "DELETE"])
 @permission_classes([IsAuthenticated])
+@throttle_classes([AnonRateThrottle, UserRateThrottle])
 def menu_items(request):
     if request.method == 'GET':
         items = MenuItem.objects.select_related('category').all()
@@ -61,6 +63,7 @@ def menu_items(request):
 
 @api_view(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
+@throttle_classes([AnonRateThrottle, UserRateThrottle])
 def menu_item(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
     serialized_item = MenuItemSerializer(item)

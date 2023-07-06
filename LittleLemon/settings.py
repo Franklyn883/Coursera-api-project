@@ -144,7 +144,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
          'rest_framework.authentication.TokenAuthentication'
-    ]
+    ],
+    'DEFAULT_THROTTLE_RATES':{
+        'anon':"2/minute",
+        'user': '5/minute'
+    },
     
 }
 
