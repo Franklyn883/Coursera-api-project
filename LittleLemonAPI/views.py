@@ -23,9 +23,24 @@ from django.core.paginator import Paginator,EmptyPage
 def menu_items(request):
     if request.method == 'GET':
         items = MenuItem.objects.select_related('category').all()
+        #for filtering
+        category_name = request.query_params.get('category')
+        to_price = request.query_params.get('to_price')
+        search = request.query_params.get('search')
+        ordering = request.query_params.get('ordering')
+        if category_name:
+            items = items.filter(category__title = category_name)#the double underscore is for lookup.
+        if to_price:
+            items = items.filter(price__lte = to_price)
+        if search:
+            items = items.filter(title__icontains = search) 
+        if ordering:
+            ordering_fields = ordering.split(",")
+            items = items.order_by(*ordering_fields)
+        
+        #for pagination
         perpage = request.query_params.get('perpage',default=2)
         page = request.query_params.get('page', default=1)
-        
         paginator = Paginator(items, per_page=perpage)
         try:
             items = paginator.page(number=page)
